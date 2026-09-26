@@ -1,1 +1,26 @@
+# Environment / secrets
+.env
+.env.*
+!.env.example
 
+# Dependencies
+node_modules/
+
+# Build / framework output
+dist/
+build/
+.next/
+
+# Local development
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
