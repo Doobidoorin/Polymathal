@@ -1,1 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Polymathal</title>
 
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="style.css">
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+</head>
+<body>
+
+
+<div id="global-loader" class="global-loader" aria-hidden="true">
+  <div class="loader-mark" aria-label="Loading"></div>
+</div>
+
+
+<div id="toast-region" class="toast-region" role="status" aria-live="polite"></div>
+
+
+<main id="auth-view" class="auth-view">
+  <div class="auth-panel">
+    <div class="auth-brand">
+      <span class="auth-mark" aria-hidden="true">
+        <svg viewBox="0 0 40 40" width="34" height="34">
+          <circle cx="20" cy="8" r="3.4" class="mark-node"></circle>
+          <circle cx="8" cy="24" r="3.4" class="mark-node"></circle>
+          <circle cx="32" cy="24" r="3.4" class="mark-node"></circle>
+          <circle cx="20" cy="34" r="3.4" class="mark-node"></circle>
+          <line x1="20" y1="8" x2="8" y2="24" class="mark-edge"></line>
+          <line x1="20" y1="8" x2="32" y2="24" class="mark-edge"></line>
+          <line x1="8" y1="24" x2="20" y2="34" class="mark-edge"></line>
+          <line x1="32" y1="24" x2="20" y2="34" class="mark-edge"></line>
+        </svg>
+      </span>
+      <span class="auth-wordmark">Polymathal</span>
+    </div>
+
+    <p class="auth-tagline">A private space to track your learning and a map of where your curiosity has been.</p>
+
+    
+    <form id="form-signin" class="auth-form" novalidate>
+      <h1 class="auth-heading">Sign in</h1>
+
+      <label class="field">
+        <span class="field-label">Email</span>
+        <input type="email" name="email" autocomplete="email" required>
+      </label>
+
+      <label class="field">
+        <span class="field-label">Password</span>
+        <input type="password" name="password" autocomplete="current-password" required>
+      </label>
+
+      <p class="field-error" data-error-for="signin" hidden></p>
+
+      <button type="submit" class="btn btn-primary btn-block">Sign in</button>
+
+      <div class="auth-links">
+        <button type="button" class="link-btn" data-goto="reset">Forgot password</button>
+        <button type="button" class="link-btn" data-goto="signup">Create an account</button>
+      </div>
+    </form>
+
+  
+    <form id="form-signup" class="auth-form" novalidate hidden>
+      <h1 class="auth-heading">Create an account</h1>
+
+      <label class="field">
+        <span class="field-label">Username</span>
+        <input type="text" name="username" autocomplete="username" minlength="3" maxlength="24" pattern="[a-z0-9_]{3,24}" required>
+        <span class="field-hint">Lowercase letters, numbers, underscores. This is how others find your public profile.</span>
+      </label>
+
+      <label class="field">
+        <span class="field-label">Email</span>
+        <input type="email" name="email" autocomplete="email" required>
+      </label>
+
+      <label class="field">
+        <span class="field-label">Password</span>
+        <input type="password" name="password" autocomplete="new-password" minlength="8" required>
+        <span class="field-hint">At least 8 characters.</span>
+      </label>
+
+      <p class="field-error" data-error-for="signup" hidden></p>
+
+      <button type="submit" class="btn btn-primary btn-block">Create account</button>
+
+      <div class="auth-links">
+        <button type="button" class="link-btn" data-goto="signin">Already have an account</button>
+      </div>
+    </form>
+
+    <form id="form-reset" class="auth-form" novalidate hidden>
+      <h1 class="auth-heading">Reset password</h1>
+      <p class="auth-subtext">Enter the email on your account and we will send a link to reset your password.</p>
+
+      <label class="field">
+        <span class="field-label">Email</span>
+        <input type="email" name="email" autocomplete="email" required>
+      </label>
+
+      <p class="field-error" data-error-for="reset" hidden></p>
+      <p class="field-success" data-success-for="reset" hidden></p>
+
+      <button type="submit" class="btn btn-primary btn-block">Send reset link</button>
+
+      <div class="auth-links">
+        <button type="button" class="link-btn" data-goto="signin">Back to sign in</button>
+      </div>
+    </form>
+
+    
+    <form id="form-new-password" class="auth-form" novalidate hidden>
+      <h1 class="auth-heading">Choose a new password</h1>
+
+      <label class="field">
+        <span class="field-label">New password</span>
+        <input type="password" name="password" autocomplete="new-password" minlength="8" required>
+      </label>
+
+      <p class="field-error" data-error-for="new-password" hidden></p>
+
+      <button type="submit" class="btn btn-primary btn-block">Update password</button>
+    </form>
+  </div>
+</main>
+
+
+<div id="app-view" class="app-view" hidden>
+
+ 
+  <nav class="sidebar" aria-label="Main navigation">
+    <div class="sidebar-brand">
+      <span class="auth-mark" aria-hidden="true">
+        <svg viewBox="0 0 40 40" width="26" height="26">
+          <circle cx="20" cy="8" r="3.4" class="mark-node"></circle>
+          <circle cx="8" cy="24" r="3.4" class="mark-node"></circle>
+          <circle cx="32" cy="24" r="3.4" class="mark-node"></circle>
+          <circle cx="20" cy="34" r="3.4" class="mark-node"></circle>
+          <line x1="20" y1="8" x2="8" y2="24" class="mark-edge"></line>
+          <line x1="20" y1="8" x2="32" y2="24" class="mark-edge"></line>
+          <line x1="8" y1="24" x2="20" y2="34" class="mark-edge"></line>
+          <line x1="32" y1="24" x2="20" y2="34" class="mark-edge"></line>
+        </svg>
+      </span>
+      <span class="sidebar-wordmark">Polymathal</span>
+    </div>
+
+    <div class="sidebar-nav">
+      <button class="nav-item is-active" data-view="map">
+        <span class="nav-icon" aria-hidden="true">&#9737;</span>
+        <span>Interest map</span>
+      </button>
+      <button class="nav-item" data-view="chat">
+        <span class="nav-icon" aria-hidden="true">&#9776;</span>
+        <span>Chat</span>
+      </button>
+      <button class="nav-item" data-view="diary">
+        <span class="nav-icon" aria-hidden="true">&#9776;</span>
+        <span>Diary</span>
+      </button>
+      <button class="nav-item" data-view="search">
+        <span class="nav-icon" aria-hidden="true">&#9737;</span>
+        <span>Find people</span>
+      </button>
+    </div>
+
+    <div class="sidebar-footer">
+      <button class="nav-item" data-view="settings">
+        <span class="nav-icon" aria-hidden="true">&#9881;</span>
+        <span>Settings</span>
+      </button>
+      <button class="nav-item" id="btn-sign-out">
+        <span class="nav-icon" aria-hidden="true">&#8594;</span>
+        <span>Sign out</span>
+      </button>
+    </div>
+  </nav>
+
+ 
+  <header class="topbar">
+    <h2 id="view-title" class="view-title">Interest map</h2>
+    <div class="topbar-actions">
+      <span id="current-username" class="current-username"></span>
+    </div>
+  </header>
+
+ 
+  <section id="view-map" class="view view-map">
+    <div class="map-toolbar">
+      <div class="map-toolbar-group">
+        <button id="btn-add-interest" class="btn btn-secondary">Add interest</button>
+        <button id="btn-review-suggestions" class="btn btn-ghost">
+          Review suggestions
+          <span id="suggestion-count" class="badge" hidden>0</span>
+        </button>
+      </div>
+      <div class="map-toolbar-group">
+        <label class="toggle">
+          <input type="checkbox" id="filter-public-only">
+          <span>Public only</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="map-stage">
+      <svg id="map-svg" class="map-svg" aria-label="Your interest map"></svg>
+
+      <div id="map-empty" class="map-empty" hidden>
+        <p class="empty-title">Your map is empty</p>
+        <p class="empty-body">Talk to the assistant about something you are curious about or add an interest directly.</p>
+        <button class="btn btn-primary" data-goto-view="chat">Start a conversation</button>
+      </div>
+    </div>
+
+   
+    <aside id="node-inspector" class="node-inspector" hidden>
+      <button class="inspector-close" id="btn-close-inspector" aria-label="Close">&times;</button>
+      <h3 id="inspector-title" class="inspector-title"></h3>
+
+      <div class="inspector-row">
+        <span class="inspector-label">Category</span>
+        <span id="inspector-category" class="inspector-value"></span>
+      </div>
+
+      <div class="inspector-row">
+        <span class="inspector-label">Learning status</span>
+        <select id="inspector-status" class="select-inline">
+          <option value="curious">Curious about</option>
+          <option value="learning">Actively learning</option>
+          <option value="comfortable">Comfortable with</option>
+          <option value="dormant">Set aside</option>
+        </select>
+      </div>
+
+      <div class="inspector-row">
+        <span class="inspector-label">Visibility</span>
+        <label class="toggle">
+          <input type="checkbox" id="inspector-public">
+          <span>Public</span>
+        </label>
+      </div>
+
+      <div class="inspector-row inspector-notes-row">
+        <span class="inspector-label">Notes</span>
+        <textarea id="inspector-notes" class="notes-area" rows="4" placeholder="Private notes about this interest"></textarea>
+      </div>
+
+      <div class="inspector-connections">
+        <span class="inspector-label">Connected to</span>
+        <ul id="inspector-connections-list" class="connections-list"></ul>
+      </div>
+
+      <div class="inspector-actions">
+        <button id="btn-save-interest" class="btn btn-primary">Save changes</button>
+        <button id="btn-delete-interest" class="btn btn-danger-ghost">Remove interest</button>
+      </div>
+    </aside>
+  </section>
+
+
+  <section id="view-chat" class="view view-chat" hidden>
+    <div class="chat-log" id="chat-log">
+      <div class="chat-empty" id="chat-empty">
+        <p class="empty-title">Nothing here yet</p>
+        <p class="empty-body">Write about what you have been reading, wondering about or trying to learn. The assistant will listen and when it notices a pattern worth keeping it will ask before adding anything to your map.</p>
+      </div>
+    </div>
+
+    <div class="chat-composer">
+      <textarea id="chat-input" class="chat-input" rows="1" placeholder="Tell it what's on your mind"></textarea>
+      <button id="btn-send-chat" class="btn btn-primary chat-send">Send</button>
+    </div>
+  </section>
+
+  <section id="view-diary" class="view view-diary" hidden>
+    <div id="diary-list" class="diary-list">
+      <div class="diary-empty" id="diary-empty">
+        <p class="empty-title">No entries yet</p>
+        <p class="empty-body">Your diary fills in automatically as you talk with the assistant. Each entry stays private to you.</p>
+      </div>
+    </div>
+  </section>
+
+
+  <section id="view-search" class="view view-search" hidden>
+    <div class="search-bar">
+      <input type="text" id="search-username" class="search-input" placeholder="Search by username">
+      <button id="btn-search-username" class="btn btn-secondary">Search</button>
+    </div>
+
+    <div id="search-results" class="search-results"></div>
+
+    <div id="public-profile" class="public-profile" hidden>
+      <button class="link-btn" id="btn-back-to-search">Back to search</button>
+      <h3 id="public-profile-username" class="public-profile-username"></h3>
+      <p id="public-profile-status" class="public-profile-status"></p>
+      <svg id="public-map-svg" class="map-svg public-map-svg" aria-label="Public interest map"></svg>
+      <p id="public-profile-empty" class="empty-body" hidden>This user has not made any interests public.</p>
+    </div>
+  </section>
+
+ 
+  <section id="view-settings" class="view view-settings" hidden>
+    <div class="settings-card">
+      <h3 class="settings-heading">Profile</h3>
+
+      <label class="field">
+        <span class="field-label">Username</span>
+        <input type="text" id="settings-username" pattern="[a-z0-9_]{3,24}">
+      </label>
+
+      <label class="field">
+        <span class="field-label">Email</span>
+        <input type="email" id="settings-email" disabled>
+        <span class="field-hint">Contact support to change the email on your account.</span>
+      </label>
+
+      <button id="btn-save-profile" class="btn btn-secondary">Save profile</button>
+      <p class="field-success" data-success-for="settings-profile" hidden></p>
+    </div>
+
+    <div class="settings-card">
+      <h3 class="settings-heading">Privacy</h3>
+      <label class="toggle toggle-row">
+        <input type="checkbox" id="settings-broad-status-public">
+        <span>Show a broad learning status on my public profile</span>
+      </label>
+      <p class="settings-note">Individual interests are only public when you mark them public from the map.</p>
+    </div>
+
+    <div class="settings-card">
+      <h3 class="settings-heading">Password</h3>
+      <label class="field">
+        <span class="field-label">New password</span>
+        <input type="password" id="settings-new-password" minlength="8">
+      </label>
+      <button id="btn-change-password" class="btn btn-secondary">Update password</button>
+      <p class="field-success" data-success-for="settings-password" hidden></p>
+    </div>
+  </section>
+
+
+  <div id="suggestions-modal" class="modal-backdrop" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="suggestions-title">
+      <button class="inspector-close" id="btn-close-suggestions" aria-label="Close">&times;</button>
+      <h3 id="suggestions-title" class="inspector-title">Suggested additions</h3>
+      <p class="auth-subtext">The assistant noticed these while you were talking. Nothing is added to your map until you approve it.</p>
+      <ul id="suggestions-list" class="suggestions-list"></ul>
+    </div>
+  </div>
+
+  
+  <div id="add-interest-modal" class="modal-backdrop" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="add-interest-title">
+      <button class="inspector-close" id="btn-close-add-interest" aria-label="Close">&times;</button>
+      <h3 id="add-interest-title" class="inspector-title">Add an interest</h3>
+
+      <label class="field">
+        <span class="field-label">Name</span>
+        <input type="text" id="add-interest-name" required>
+      </label>
+
+      <label class="field">
+        <span class="field-label">Category</span>
+        <input type="text" id="add-interest-category" placeholder="e.g. science, craft, history">
+      </label>
+
+      <p class="field-error" data-error-for="add-interest" hidden></p>
+
+      <button id="btn-confirm-add-interest" class="btn btn-primary">Add to map</button>
+    </div>
+  </div>
+
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
